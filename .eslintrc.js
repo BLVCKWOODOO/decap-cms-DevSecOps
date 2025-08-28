@@ -81,8 +81,9 @@ module.exports = {
         'plugin:import/typescript',
       ],
       parserOptions: {
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         sourceType: 'module',
+	project: './tsconfig.json'
         ecmaFeatures: {
           jsx: true,
         },

@@ -1,0 +1,52 @@
+name: DAST Security Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  dast:
+    runs-on: ubuntu-latest
+    name: OWASP ZAP DAST Scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Поднимаем приложение внутри пайплайна
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Start project
+        run: |
+          nohup npm start &
+          sleep 15
+
+      # Запускаем OWASP ZAP в режиме сканирования
+      - name: OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.7.0
+        with:
+          target: 'http://localhost:3000'
+          cmd_options: '-a'
+          allow_issue_writing: false
+          rules_file_name: ''
+          docker_name: 'owasp/zap2docker-stable'
+          issue_title: 'OWASP ZAP DAST Report'
+
+      # Загружаем отчёт в артефакты
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: zap_report.html

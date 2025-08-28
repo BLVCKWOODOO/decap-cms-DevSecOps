@@ -46,7 +46,8 @@ jobs:
         with:
           category: "security-analysis"
 
-      - name: Secret Scanning
-        uses: trufflesecurity/trufflehog@v3
+      - name: Secret scanning with TruffleHog
+        uses: trufflesecurity/trufflehog@v3.63.6
+
         with:
           scan: "repo"
